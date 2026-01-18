@@ -49,7 +49,7 @@ export async function POST(request)
     if (email) 
     {
         // ----- EMAIL CHECK -----
-        const response = await fetch(`https://leakcheck.io/api/public?check=${encodeURIComponent(email)}`);
+        const response = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(email)}`);
         const data = await response.json();
         
         if (data.success) 
@@ -58,11 +58,19 @@ export async function POST(request)
             const breach_source = data.sources ? data.sources.map(source => source.name) : [];
             
             return Response.json({  
-                type: "email",
                 leaked: found > 0,
                 count: found,
+                type: "email",
                 sources: breach_source,
                 message:`⚠️ Email found in ${found} breaches. Sources include: ${breach_source.join(", ")}. Do well to change your password immediately.`
+            });
+        }
+        else 
+        {
+            return Response.json({
+                leaked: 0,
+                type: "email",
+                message: "✅ Email not found in any known breaches you are safe."
             });
         }
     }
